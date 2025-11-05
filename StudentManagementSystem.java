@@ -16,7 +16,7 @@ class Student{
         this.marks=marks;
     }
 
-  public String toString(){
+   public String toString(){
       return "Student-> ID: "+stdID+", Name: "+name+", Marks: "+marks;
      }  
 }
@@ -29,11 +29,23 @@ class StudentManager{
         System.out.print("Enter Student ID: ");
         int id = in.nextInt();
         in.nextLine(); // newline left by 
+       // Prevent Duplicate ID
+      for(Student s : students){
+        if(s.stdID == id){
+            System.out.println("Student ID already exists! Try again.\n");
+            return; // stop method here
+        }
+       }
 
         System.out.print("Enter Student Name: ");
         String name = in.nextLine();
         System.out.print("Enter Marks: ");
         int marks = in.nextInt();
+      //Input Validation for Marks
+       if(marks < 0 || marks > 100){
+          System.out.println("⚠ Marks must be between 0 and 100.\n");
+          return; // stop method here
+        }
 
         students.add(new Student(id, name, marks));
         System.out.println("Student added successfully!\n");
@@ -132,6 +144,30 @@ class StudentManager{
        }
      }
 
+      void sortByMarks(){
+        if (students.isEmpty()){
+              System.out.println("No students to sort!\n");
+             return;
+         }
+      // Sort in descending order (highest marks first)
+        students.sort((s1, s2) -> s2.marks - s1.marks);
+        System.out.println("Students sorted by marks (High → Low):\n");
+       displayStudents(); // reuse your existing function
+}
+
+       void showAverageMarks(){
+           if (students.isEmpty()) {
+              System.out.println("No records to calculate average!\n");
+              return;
+          }
+         double sum = 0;
+        for (Student s : students) {
+             sum += s.marks;
+       }
+       double avg = sum / students.size();
+        System.out.println("Average Marks of Class = " + avg + "\n");
+    }
+
      void saveToFile(){
            try{
                  FileWriter writer = new FileWriter("students.txt"); // overwrite
@@ -144,6 +180,7 @@ class StudentManager{
               System.out.println("Error saving data: " + e.getMessage());
             }
          }
+
      void loadFromFile(){
           try{
                FileReader fr = new FileReader("students.txt");
@@ -180,7 +217,9 @@ public class StudentManagementSystem {
             System.out.println("3. Search Student");
             System.out.println("4. Update Student");
             System.out.println("5. Delete Student");
-            System.out.println("6. Save & Exit");
+            System.out.println("6. Show Average Marks");
+	    System.out.println("7. Sort Students by Marks");
+            System.out.println("8. Save & Exit");
             System.out.print("Enter your choice: ");
             choice = cin.nextInt();
 
@@ -190,11 +229,14 @@ public class StudentManagementSystem {
                 case 3: std.searchStudent(); break;
                 case 4: std.updateStudent(); break;
                 case 5: std.deleteStudent(); break;
-                case 6: std.saveToFile();
-                         System.out.println("Exiting... Thank you!");break;
-                default: System.out.println("Invalid choice! Try again.\n");
-            }
-        } while (choice != 6);
+                case 6: std.showAverageMarks(); break;     
+                case 7: std.sortByMarks(); break;          
+                case 8: std.saveToFile();
+                        System.out.println("Exiting... Thank you!");
+                         break;
+               default: System.out.println("Invalid choice! Try again.\n");
+              }
+           }while(choice != 8);
         
     }
 }
